@@ -1,7 +1,6 @@
 #include <Servo.h>
 #include "Edgy.h"
 
-
 void setup()
 {
   Serial.begin(9600);
@@ -24,49 +23,106 @@ const int R = 4; // spin right
 const int FF = 5; // fast forward + angry face
 const int HUG = 6; // close up to the object, hug, smile, release gripper
 
-
 // initial state
 int state = SF;
 
+// flags indicating if there are walls on either side of vehicle
+bool leftWall = false;
+bool rightWall = false;
 
-void loop()
-{
-pincer.open();
+// signal to charge ahead
+bool charge = false; 
 
+void loop() {
 
-switch(state) {
-  case S:
-    drive.stop();
-    break;
+  switch(state) {
+   case S:
+      drive.stop();
+      delay(500); // 0.5 second
+      
+      if (charge) {
+        state = HUG;
+      }
+      else {
+        state = L;
+      }
+      break;
 
+    case SF:
+      drive.forward(128); // half-speed
+      // TODO: add random shape: forward arrow, sun or sth that indicates serenity/calmness
+      if (distanceSensor.get_distance() < 100) {
+        state = S;
+      }
+      break;
 
-  case SF:
-    drive.forward();
-    break;
+    case B:
+      drive.backward(128);
+      delay(1000);
+      drive.spinRight(128);
+      delay(600);
+      state = SF; // restart
+      break;
 
+    case L:
+      drive.spinLeft(128);
+      delay(200);
+      if (distanceSensor.get_distance() < 100) {
+        leftWall = true; 
+      }
+      state = R;
+      break;
 
-  case B:
-    break;
+    case R:
+      drive.spinRight(128);
+      delay(400);
+      if (distanceSensor.get_distance() < 100) {
+        rightWall = true; 
+      }
+      
+      // distance detected is a wall
+      if (leftWall & rightWall) {
+        spinRight(128);
+        delay(400);
+        leftWall = false;
+        rightWall = false;
+        state = SF;
+      }
+      else {
+        charge = true;
+        drive.spinLeft(128);
+        delay(200);
+        state = FF:
+      }
+      break;
 
+    case FF:
+      drive.forward(); // full speed
+      // TODO: add angry face >_<
+      if (distanceSensor.get_distance() < 20) {
+         state = S;
+      }
+      break;
 
-  case L:
-    break;
+    case HUG:
+      pincer.open();
+      delay(200);
+   
+      drive.forward(128); 
+      delay(600); // to fine-tune so that object is in pincher's grab
+      
+      pincer.close();
+      // TODO: add smiling face :)     
+      delay(2000);
+      
+      pincer.open();
+      state = B;
+      break;
+  } // end of switch case
 
-
-  case R:
-    break;
-
-
-  case FF:
-    break;
-
-
-  case HUG:
-    break;
-
-
-}
-  
+        /**********************
+         ORIGINAL TESTER CODE
+        ***********************/
 //  Serial.println("Testing pincer...");
 //  	for(int i = 0; i < 5; i++) {
 //  	pincer.open();
