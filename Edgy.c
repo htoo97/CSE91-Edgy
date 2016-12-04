@@ -1,11 +1,12 @@
 #include <Servo.h>
 #include "Edgy.h"
 
+/*
+ * Note: forward and backward, and left and right are inverted in this code.
+ * The arduino robot had to be assembled in such a way that the wheels are inverted.
+ */
 
-
-
-
-
+Song song(buzzer); // "SongData.h" in library contains NyanCat song
 Adafruit_8x8matrix matrix = Adafruit_8x8matrix();
 static const uint8_t PROGMEM
   arrow[] =
@@ -17,9 +18,6 @@ static const uint8_t PROGMEM
     B01111110,
     B00111100,
     B00011000 },
-
-
-
 
   sadface[] =
   { B00111100,
@@ -41,16 +39,6 @@ static const uint8_t PROGMEM
     B01000010,
     B00111100 };
 
-
-
-
-
-
-
-
-Song song(buzzer);
-
-
 void setup()
 {
   Serial.begin(9600);
@@ -63,8 +51,8 @@ void setup()
   bump.setup();
   bump_3.setup();
   matrix.begin(0x84);
-  
 }
+
 // state definitions
 const int S = 0;
 const int SF = 1; // drive forward slow + arrow
@@ -74,23 +62,21 @@ const int R = 4; // spin right
 const int FF = 5; // fast forward + angry face
 const int HUG = 6; // close up to the object, hug, smile, release gripper
 
-
 // initial state
 int state = SF;
-
 
 // flags indicating if there are walls on either side of vehicle
 bool leftWall = false;
 bool rightWall = false;
 
-
 // signal to charge ahead
 bool charge = false; 
 
-
 void loop()
 {
-buzzer.playNote(NOTE_B4, 250);
+    song.playNextNote();
+  
+    buzzer.playNote(NOTE_B4, 250);
     delay(250);
     buzzer.playNote(NOTE_A4, 250);
     delay(250);
@@ -164,8 +150,7 @@ buzzer.playNote(NOTE_B4, 250);
     delay(1000);
 
 
-switch(state) {
-
+  switch(state) {
 
    case S:
       drive.stop();
@@ -182,13 +167,13 @@ switch(state) {
 
 
     case SF:
-      matrix.clear();
       drive.backward(128); // half-speed
       
       display.clear();
       display.drawBitmap(0, 0, arrow, 8, 8, LED_ON);
       display.writeDisplay();
       
+      // distanceSensor's default value drops: it detects changes
       if (distanceSensor.get_distance() < 100) {
         state = S;
       }
@@ -246,29 +231,28 @@ switch(state) {
       display.drawBitmap(0,0,sadface,8,8,LED_ON);
       display.writeDisplay();
       
-      if (distanceSensor.get_distance() < 30) {
+      // until distanceSensor value is close enough
+      if (distanceSensor.get_distance() < 20) {
          state = S;
       }
       break;
 
 
     case HUG:
-        pincer.open();
-        delay(2000);
+      pincer.open();
+      delay(1000);
    
       drive.backward(128); 
-      delay(600); // to fine-tune so that object is in pincher's grab
-      
-      pincer.close();
-      delay(2000);
+      delay(600); // fine-tuned so that object is in pincher's grab
       
       display.clear();
       display.drawBitmap(0, 0, smilyface, 8, 8, LED_ON);
-      display.writeDisplay();    
+      display.writeDisplay();
+      pincer.close();
       delay(2000);
-      
+            
       pincer.open(); 
-      delay(500);
+      delay(1000);
       state = B;
       break;
   } // end of switch case
