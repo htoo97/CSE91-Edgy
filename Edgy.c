@@ -74,82 +74,8 @@ bool charge = false;
 
 void loop()
 {
-    song.playNextNote();
+  song.playNextNote();
   
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_G4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-
-
-    // Measure 2
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_B4, 250);
-    delay(500);        // We delay a little longer here to emulate the half note
-
-
-    // Measure 3
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 500);
-    delay(500);        // We delay a little longer here to emulate the half note
-
-
-    // Measure 4
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_D5, 250);
-    delay(250);
-    buzzer.playNote(NOTE_D5, 500);
-    delay(500);        // We delay a little longer here to emulate the half note
-
-
-    // Measure 5
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_G4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-
-
-    // Measure 6
-    
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_B4, 500);
-    delay(500);        // We delay a little longer here to emulate the half note
-
-
-    // Measure 7
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_B4, 250);
-    delay(250);
-    buzzer.playNote(NOTE_A4, 250);
-    delay(250);
-
-
-    // Measure 8
-    buzzer.playNote(NOTE_G4, 1000);
-    delay(1000);
-
-
   switch(state) {
 
    case S:
