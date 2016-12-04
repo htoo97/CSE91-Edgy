@@ -6,7 +6,6 @@
  * The arduino robot had to be assembled in such a way that the wheels are inverted.
  */
 
-Song song(buzzer); // "SongData.h" in library contains NyanCat song
 Adafruit_8x8matrix matrix = Adafruit_8x8matrix();
 static const uint8_t PROGMEM
   arrow[] =
@@ -18,6 +17,9 @@ static const uint8_t PROGMEM
     B01111110,
     B00111100,
     B00011000 },
+
+
+
 
   sadface[] =
   { B00111100,
@@ -39,6 +41,8 @@ static const uint8_t PROGMEM
     B01000010,
     B00111100 };
 
+Song song(buzzer);
+
 void setup()
 {
   Serial.begin(9600);
@@ -51,8 +55,8 @@ void setup()
   bump.setup();
   bump_3.setup();
   matrix.begin(0x84);
+  
 }
-
 // state definitions
 const int S = 0;
 const int SF = 1; // drive forward slow + arrow
@@ -62,21 +66,26 @@ const int R = 4; // spin right
 const int FF = 5; // fast forward + angry face
 const int HUG = 6; // close up to the object, hug, smile, release gripper
 
+
 // initial state
 int state = SF;
+
 
 // flags indicating if there are walls on either side of vehicle
 bool leftWall = false;
 bool rightWall = false;
 
+
 // signal to charge ahead
 bool charge = false; 
 
+
 void loop()
 {
-  song.playNextNote();
+song.playNextNote();
   
-  switch(state) {
+switch(state) {
+
 
    case S:
       drive.stop();
@@ -93,13 +102,13 @@ void loop()
 
 
     case SF:
+      matrix.clear();
       drive.backward(128); // half-speed
       
       display.clear();
       display.drawBitmap(0, 0, arrow, 8, 8, LED_ON);
       display.writeDisplay();
       
-      // distanceSensor's default value drops: it detects changes
       if (distanceSensor.get_distance() < 100) {
         state = S;
       }
@@ -157,28 +166,29 @@ void loop()
       display.drawBitmap(0,0,sadface,8,8,LED_ON);
       display.writeDisplay();
       
-      // until distanceSensor value is close enough
-      if (distanceSensor.get_distance() < 20) {
+      if (distanceSensor.get_distance() < 30) {
          state = S;
       }
       break;
 
 
     case HUG:
-      pincer.open();
-      delay(1000);
+        pincer.open();
+        delay(2000);
    
       drive.backward(128); 
-      delay(600); // fine-tuned so that object is in pincher's grab
+      delay(600); // to fine-tune so that object is in pincher's grab
+      
+      pincer.close();
+      delay(2000);
       
       display.clear();
       display.drawBitmap(0, 0, smilyface, 8, 8, LED_ON);
-      display.writeDisplay();
-      pincer.close();
+      display.writeDisplay();    
       delay(2000);
-            
+      
       pincer.open(); 
-      delay(1000);
+      delay(500);
       state = B;
       break;
   } // end of switch case
